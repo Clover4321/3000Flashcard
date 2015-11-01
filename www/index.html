@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<!--
+    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+
+    Licensed to the Apache Software Foundation (ASF) under one
+    or more contributor license agreements.  See the NOTICE file
+    distributed with this work for additional information
+    regarding copyright ownership.  The ASF licenses this file
+    to you under the Apache License, Version 2.0 (the
+    "License"); you may not use this file except in compliance
+    with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+     KIND, either express or implied.  See the License for the
+    specific language governing permissions and limitations
+    under the License.
+-->
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="msapplication-tap-highlight" content="no" />
+        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <title>3000 Flashcard</title>
+    </head>
+    <body>
+        <nav class="navbar navbar-default">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">3000 Flashcard</a>
+                </div>
+            </div>
+        </nav>
+        <div class="jumbotron">
+            <center class="word">
+                <h1 id="word">Hello world!</h1>
+            </center>
+            <div class="meaning" style="display:none;padding-left:5em;">
+                <p class="bg-danger text-danger">Leaning</p>
+                <h2 id="meaning-word">Hello world!</h2>
+                <br />
+                <h4 id="meaning-content">You know it!</h4>
+            </div>
+        </div>
+        <button type="button" class="word btn btn-default btn-lg btn-block" id="watch">Tap to see the meaning</button>
+        <button type="button" class="meaning btn btn-success btn-lg btn-block" id="know" style="display:none;">I know this word</button>
+        <button type="button" class="meaning btn btn-danger btn-lg btn-block" id="notknow" style="display:none;">I don't know the word</button>
+        <div class="progress" style="margin-top:2em;">
+            <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 35%;">
+                35
+            </div>
+            <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 20%">
+                25
+            </div>
+            <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 10%;">
+                10
+            </div>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+        <script type="text/javascript" src="js/bootstrap.min.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            i = 0;
+            index = 0;
+            getNextWord = function() {
+                index = Math.round(Math.random()*3072)
+                return wordList[index]["word"];
+            }
+
+            getNextMeaning = function() {
+                return wordList[index]["meaning"];
+            }
+
+            showMeaning = function() {
+                $(".word").hide();
+                $(".meaning").show();
+            }
+
+            showWord = function() {
+                $(".meaning").hide();
+                var word = getNextWord();
+                var meaning = getNextMeaning();
+                $("#word").text(word);
+                $("#meaning-word").text(word);
+                $("#meaning-content").text(meaning);
+                $(".word").show();
+            }
+
+            showWordKnown = function() {
+                showWord();
+                $("#progress-learned").css("width", (i+35).toString() + "%").text(i+35);
+            }
+
+            showWordUnknown = function() {
+                showWord();
+                $("#progress-learning").css("width", (i+10).toString() + "%").text(i+10);
+            }
+
+            $("#watch").click(showMeaning);
+            $("#know").click(showWordKnown);
+            $("#notknow").click(showWordUnknown);
+        </script>
+    </body>
+</html>
