@@ -1,112 +1,194 @@
 <!DOCTYPE html>
 <!--
-    Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
+  Copyright (c) 2012-2014 Adobe Systems Incorporated. All rights reserved.
 
-    Licensed to the Apache Software Foundation (ASF) under one
-    or more contributor license agreements.  See the NOTICE file
-    distributed with this work for additional information
-    regarding copyright ownership.  The ASF licenses this file
-    to you under the Apache License, Version 2.0 (the
-    "License"); you may not use this file except in compliance
-    with the License.  You may obtain a copy of the License at
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+  http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-     KIND, either express or implied.  See the License for the
-    specific language governing permissions and limitations
-    under the License.
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+   KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
 -->
 <html>
-    <head>
-        <meta charset="utf-8" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="msapplication-tap-highlight" content="no" />
-        <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
-        <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="css/index.css" />
-        <title>3000 Flashcard</title>
-    </head>
-    <body>
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="#">3000 Flashcard</a>
-                </div>
-            </div>
-        </nav>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="msapplication-tap-highlight" content="no" />
+    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height, target-densitydpi=device-dpi" />
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/index.css" />
+    <title>3000 Flashcard</title>
+  </head>
+  <body>
+    <nav class="navbar navbar-default">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="#">3000 Flashcard</a>
+        </div>
+        <div class="collapse navbar-collapse">
+          <ul class="nav navbar-nav">
+            <li role="presentation" class="active"><a href="#learn" id="learn-tab" role="tab" data-toggle="tab" aria-controls="learn" aria-expanded="true">Learn</a></li>
+            <li role="presentation"><a href="#settings" id="settings-tab" role="tab" data-toggle="tab" aria-controls="settings" aria-expanded="true">Settings</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <div id="tab-content" class="tab-content">
+      <div role="tabpanel" class="tab-pane fade active in" id="learn" aria-labelledby="learn-tab">
         <div class="jumbotron">
-            <center class="word">
-                <h1 id="word">Hello world!</h1>
-            </center>
-            <div class="meaning" style="display:none;padding-left:5em;">
-                <p class="bg-danger text-danger">Leaning</p>
-                <h2 id="meaning-word">Hello world!</h2>
-                <br />
-                <h4 id="meaning-content">You know it!</h4>
-            </div>
+          <center class="word">
+            <h1 id="word">Hello world!</h1>
+          </center>
+          <div class="meaning" style="display:none;padding-   left:5em;">
+            <span id="word-label" class="label label-default">    New word</span>
+            <h2 id="meaning-word">Hello world!</h2>
+            <br />
+            <h4 id="meaning-content">You know it!</h4>
+          </div>
         </div>
         <button type="button" class="word btn btn-default btn-lg btn-block" id="watch">Tap to see the meaning</button>
         <button type="button" class="meaning btn btn-success btn-lg btn-block" id="know" style="display:none;">I know this word</button>
         <button type="button" class="meaning btn btn-danger btn-lg btn-block" id="notknow" style="display:none;">I don't know the word</button>
         <div class="progress" style="margin-top:2em;">
-            <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 35%;">
-                35
-            </div>
-            <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 20%">
-                25
-            </div>
-            <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 10%;">
-                10
-            </div>
+          <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
+            0
+          </div>
+          <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
+            0
+          </div>
+          <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
+            0
+          </div>
         </div>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
-        <script type="text/javascript" src="js/bootstrap.min.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
-        <script type="text/javascript" charset="utf-8">
-            i = 0;
-            index = 0;
-            getNextWord = function() {
-                index = Math.round(Math.random()*3072)
-                return wordList[index]["word"];
-            }
+      </div>
+      <div role="tabpanel" class="tab-pane fade" id="settings" aria-labelledby="settings-tab">
+        <h1>Settings</h1>
+        <h2>Choose a group you want to learn</h2>
+        <div class="list-group">
+          <a class="list-group-item active">
+            <h4 class="list-group-item-heading">Group1</h4>
+            <p class="list-group-item-text">
+              <div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
+                  0
+                </div>
+              </div>
+            </p>
+          </a>
+          <a class="list-group-item">
+            <h4 class="list-group-item-heading">Group2</h4>
+            <p class="list-group-item-text">
+              <div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
+                  0
+                </div>
+              </div>
+            </p>
+          </a>
+          <a class="list-group-item">
+            <h4 class="list-group-item-heading">Group3</h4>
+            <p class="list-group-item-text">
+              <div class="progress">
+                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
+                  0
+                </div>
+                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
+                  0
+                </div>
+              </div>
+            </p>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <script type="text/javascript" src="cordova.js"></script>
+    <script type="text/javascript" src="js/jquery-1.11.2.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/index.js"></script>
+    <script type="text/javascript" charset="utf-8">
+      cntLearning = 0;
+      cntLearned = 0;
+      cntReviewing = 0;
+      cntTotal = 3072;
+      index = 0;
 
-            getNextMeaning = function() {
-                return wordList[index]["meaning"];
-            }
+      getNextWord = function() {
+        index = Math.round(Math.random()*3072)
+        return wordList[index]["word"];
+      }
 
-            showMeaning = function() {
-                $(".word").hide();
-                $(".meaning").show();
-            }
+      getNextMeaning = function() {
+        return wordList[index]["meaning"];
+      }
 
-            showWord = function() {
-                $(".meaning").hide();
-                var word = getNextWord();
-                var meaning = getNextMeaning();
-                $("#word").text(word);
-                $("#meaning-word").text(word);
-                $("#meaning-content").text(meaning);
-                $(".word").show();
-            }
+      showMeaning = function() {
+        $(".word").hide();
+        $(".meaning").show();
+      }
 
-            showWordKnown = function() {
-                showWord();
-                $("#progress-learned").css("width", (i+35).toString() + "%").text(i+35);
-            }
+      showWord = function() {
+        $(".meaning").hide();
+        var word = getNextWord();
+        var meaning = getNextMeaning();
+        $("#word").text(word);
+        $("#meaning-word").text(word);
+        $("#meaning-content").text(meaning);
+        $(".word").show();
+      }
 
-            showWordUnknown = function() {
-                showWord();
-                $("#progress-learning").css("width", (i+10).toString() + "%").text(i+10);
-            }
+      showWordKnown = function() {
+        showWord();
+        if (wordList[index]["status"] == -1) {
+          wordList[index]["status"] = 0;
+          cntLearned++;
+          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+                      .text(cntLearned);
+        } else {
+          wordList[index]["status"] = 1;
+          cntReviewing++;
+          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+                      .text(cntReviewing);
+        }
+      }
 
-            $("#watch").click(showMeaning);
-            $("#know").click(showWordKnown);
-            $("#notknow").click(showWordUnknown);
-        </script>
-    </body>
+      showWordUnknown = function() {
+        showWord();
+        wordList[index]["status"] = 2;
+        cntLearning++;
+        $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
+                      .text(cntLearning);
+      }
+
+      $("#watch").click(showMeaning);
+      $("#know").click(showWordKnown);
+      $("#notknow").click(showWordUnknown);
+    </script>
+  </body>
 </html>
