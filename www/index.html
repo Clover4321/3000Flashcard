@@ -74,57 +74,21 @@
       </div>
       <div role="tabpanel" class="tab-pane fade" id="settings" aria-labelledby="settings-tab">
         <h1>Settings</h1>
+        <h2>Choose number of lists(100 words) in a group</h2>
+        <select id="list-per-group">
+          <option value=1>1</option>
+          <option value=3>3</option>
+          <option value=5>5</option>
+          <option value=10>10</option>
+          <option value=15>15</option>
+          <option value=31>31</option>
+        </select>
         <h2>Choose a group you want to learn</h2>
         <div class="list-group">
-          <a class="list-group-item active">
-            <h4 class="list-group-item-heading">Group1</h4>
-            <p class="list-group-item-text">
-              <div class="progress">
-                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
-                  0
-                </div>
-              </div>
-            </p>
-          </a>
-          <a class="list-group-item">
-            <h4 class="list-group-item-heading">Group2</h4>
-            <p class="list-group-item-text">
-              <div class="progress">
-                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
-                  0
-                </div>
-              </div>
-            </p>
-          </a>
-          <a class="list-group-item">
-            <h4 class="list-group-item-heading">Group3</h4>
-            <p class="list-group-item-text">
-              <div class="progress">
-                <div class="progress-bar progress-bar-success progress-bar-striped" id="progress-learned" style="width: 0%;">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-warning progress-bar-striped" id="progress-reviewing" style="width: 0%">
-                  0
-                </div>
-                <div class="progress-bar progress-bar-danger progress-bar-striped" id="progress-learning" style="width: 0%;">
-                  0
-                </div>
-              </div>
-            </p>
-          </a>
         </div>
+        <center>
+          <button id="start-learn" class="btn btn-info" style="display:none;">Start</button>
+        </center>
       </div>
     </div>
     
@@ -138,6 +102,11 @@
       cntReviewing = 0;
       cntTotal = 3072;
       index = 0;
+      selectedGroup = 0;
+      learnedList = [];
+      reviewingList = [];
+      learningList = [];
+      newList = [];
 
       getNextWord = function() {
         index = Math.round(Math.random()*3072)
@@ -165,16 +134,19 @@
 
       showWordKnown = function() {
         showWord();
+        //new word but known
         if (wordList[index]["status"] == -1) {
           wordList[index]["status"] = 0;
           cntLearned++;
           $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
                       .text(cntLearned);
-        } else {
+          //move to learnedList
+        } else { //new word or leaning word and unknown
           wordList[index]["status"] = 1;
           cntReviewing++;
           $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
                       .text(cntReviewing);
+          //move to learningList or reviewingList
         }
       }
 
@@ -184,11 +156,63 @@
         cntLearning++;
         $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
                       .text(cntLearning);
+        //move to learningList
       }
 
       $("#watch").click(showMeaning);
       $("#know").click(showWordKnown);
       $("#notknow").click(showWordUnknown);
+
+      addGroups = function(num) {
+        var listGroup = $(".list-group");
+        listGroup.empty();
+        for (var i = 1; i <= num; i++) {
+          listGroup.append(
+          "<a class=\"list-group-item\" id=\"group-"+i.toString()+"\">\
+            <h4 class=\"list-group-item-heading\">Group"+i.toString()+"</h4>\
+            <p class=\"list-group-item-text\">\
+              <div class=\"progress\">\
+                <div class=\"progress-bar progress-bar-success progress-bar-striped\" id=\"progress-learned\" style=\"width: 0%;\">\
+                  0\
+                </div>\
+                <div class=\"progress-bar progress-bar-warning progress-bar-striped\" id=\"progress-reviewing\" style=\"width: 0%\">\
+                  0\
+                </div>\
+                <div class=\"progress-bar progress-bar-danger progress-bar-striped\" id=\"progress-learning\" style=\"width: 0%;\">\
+                  0\
+                </div>\
+              </div>\
+            </p>\
+          </a>"
+          );
+        };
+      }
+
+      bindGroupClick = function() {
+        $(".list-group-item").click(function() {
+          if(selectedGroup != 0) {
+            $("#"+selectedGroup).removeClass("active");
+          }
+          $("#"+this.id).addClass("active");
+          selectedGroup = this.id;
+          $("#start-learn").show();
+        })
+      }
+
+      initStartClick = function() {
+        $("#start-learn").click(function() {
+          //determine start
+          //determine end
+          //copy to newList
+          //jump to learn page
+        })
+      }
+
+      $("#list-per-group").change(function() {
+        var num = parseInt($("#list-per-group option:selected").val());
+        addGroups(num);
+        bindGroupClick();
+      })
     </script>
   </body>
 </html>
