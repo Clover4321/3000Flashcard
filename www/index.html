@@ -81,7 +81,7 @@
           <option value=5>5</option>
           <option value=10>10</option>
           <option value=15>15</option>
-          <option value=31>31</option>
+          <option value=30>30</option>
         </select>
         <h2>Choose a group you want to learn</h2>
         <div class="list-group">
@@ -98,23 +98,43 @@
     <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript" charset="utf-8">
       cntLearning = 0;
-      cntLearned = 0;
       cntReviewing = 0;
+      cntLearned = 0;
       cntTotal = 3072;
       index = 0;
       selectedGroup = 0;
-      learnedList = [];
-      reviewingList = [];
-      learningList = [];
-      newList = [];
+      learnedList = [];   //0
+      reviewingList = []; //1
+      learningList = [];  //2
+      newList = wordList; //3
+      choosedList = wordList;
 
       getNextWord = function() {
-        index = Math.round(Math.random()*3072)
-        return wordList[index]["word"];
+        var nUnknown = reviewingList.length + learningList.length + newList.length;
+        if (nUnknown > 0) {
+          index = Math.round(Math.random()*nUnknown);
+          if (index <= reviewingList.length) {
+            choosedList = reviewingList;
+            index--;
+            return reviewingList[index]["word"];
+          } else if ((index - reviewingList.length) <= learningList.length) {
+            index = index - reviewingList.length - 1;
+            choosedList = learningList;
+            return learningList[index]["word"];
+          } else {
+            index = index - reviewingList.length - learnedList.length - 1;
+            choosedList = newList;
+            return newList[index]["word"];
+          }
+        } else {
+          choosedList = learnedList;
+          index--;
+          return learnedList[index]["word"];
+        }
       }
 
       getNextMeaning = function() {
-        return wordList[index]["meaning"];
+        return choosedList[index]["meaning"];
       }
 
       showMeaning = function() {
@@ -132,31 +152,63 @@
         $(".word").show();
       }
 
+      //status: -1 for new, 0 for learned, 1 for review, 2 for learning
+
       showWordKnown = function() {
         showWord();
         //new word but known
-        if (wordList[index]["status"] == -1) {
-          wordList[index]["status"] = 0;
+        if (choosedList[index]["status"] == -1) {
+          choosedList[index]["status"] = 0;
           cntLearned++;
           $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
                       .text(cntLearned);
           //move to learnedList
-        } else { //new word or leaning word and unknown
-          wordList[index]["status"] = 1;
+          learnedList.push(newList.splice(index,1)[0]);
+        } else if (choosedList[index]["status"] == 1){ //reviewing word and known
+          choosedList[index]["status"] = 0;
+          cntReviewing--;
+          cntLearned++;
+          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+                      .text(cntReviewing);
+          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+                      .text(cntLearned);
+          //move to reviewList or learnedList
+          learnedList.push(reviewingList.splice(index,1)[0]);
+        } else {
+          //unknown word but known now
+          choosedList[index]["status"] = 1;
+          cntLearning--;
           cntReviewing++;
           $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
                       .text(cntReviewing);
-          //move to learningList or reviewingList
+          $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
+                      .text(cntLearning);
+          //move to reviewList or learnedList
+          reviewingList.push(learningList.splice(index,1)[0]);
         }
       }
 
       showWordUnknown = function() {
         showWord();
-        wordList[index]["status"] = 2;
+        if (choosedList[index]["status"] == 0) {
+          //once known but unknown now
+          cntLearned--;
+          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+                      .text(cntLearned);
+          learningList.push(learnedList.splice(index,1)[0]);
+        } else if (choosedList[index]["status"] == 1) {
+          //once reviewing but unknown now
+          cntReviewing--;
+          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+                      .text(cntReviewing);
+          learningList.push(reviewingList.splice(index,1)[0]);
+        } else {
+          //once new but unknown, simply pass
+        }
+        choosedList[index]["status"] = 2;
         cntLearning++;
         $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
                       .text(cntLearning);
-        //move to learningList
       }
 
       $("#watch").click(showMeaning);
@@ -166,19 +218,20 @@
       addGroups = function(num) {
         var listGroup = $(".list-group");
         listGroup.empty();
-        for (var i = 1; i <= num; i++) {
+        var nGroup = 30 / num;
+        for (var i = 1; i <= nGroup; i++) {
           listGroup.append(
           "<a class=\"list-group-item\" id=\"group-"+i.toString()+"\">\
             <h4 class=\"list-group-item-heading\">Group"+i.toString()+"</h4>\
             <p class=\"list-group-item-text\">\
               <div class=\"progress\">\
-                <div class=\"progress-bar progress-bar-success progress-bar-striped\" id=\"progress-learned\" style=\"width: 0%;\">\
+                <div class=\"progress-bar progress-bar-success progress-bar-striped\" id=\"progress-learned-"+i.toString()+"\" style=\"width: 0%;\">\
                   0\
                 </div>\
-                <div class=\"progress-bar progress-bar-warning progress-bar-striped\" id=\"progress-reviewing\" style=\"width: 0%\">\
+                <div class=\"progress-bar progress-bar-warning progress-bar-striped\" id=\"progress-reviewing-"+i.toString()+"\" style=\"width: 0%\">\
                   0\
                 </div>\
-                <div class=\"progress-bar progress-bar-danger progress-bar-striped\" id=\"progress-learning\" style=\"width: 0%;\">\
+                <div class=\"progress-bar progress-bar-danger progress-bar-striped\" id=\"progress-learning-"+i.toString()+"\" style=\"width: 0%;\">\
                   0\
                 </div>\
               </div>\
@@ -201,10 +254,21 @@
 
       initStartClick = function() {
         $("#start-learn").click(function() {
+          var nList = parseInt($("#list-per-group option:selected").val());
+          var gIndex = parseInt(selectedGroup.split("-")[1]);
           //determine start
+          var start = (gIndex - 1) * 100;
           //determine end
+          var end = start + nList * 100;
+          if ((30/nList) == gIndex) {
+            //the last group
+            end += 72;
+          }
           //copy to newList
+          newList = wordList.slice(start, end);
           //jump to learn page
+          $("#settings").removeClass("active in");
+          $("#learn").addClass("active in");
         })
       }
 
@@ -212,6 +276,7 @@
         var num = parseInt($("#list-per-group option:selected").val());
         addGroups(num);
         bindGroupClick();
+        initStartClick();
       })
     </script>
   </body>
