@@ -48,13 +48,13 @@
       <div role="tabpanel" class="tab-pane fade active in" id="learn" aria-labelledby="learn-tab">
         <div class="jumbotron">
           <center class="word">
-            <h1 id="word">Hello world!</h1>
+            <h1 id="word">Avada Kedavra 3000 Flashcard</h1>
           </center>
-          <div class="meaning" style="display:none;padding-   left:5em;">
-            <span id="word-label" class="label label-default">    New word</span>
-            <h2 id="meaning-word">Hello world!</h2>
+          <div class="meaning" style="display:none;padding-left:5em;">
+            <span id="word-label" class="label label-info">Introduction</span>
+            <h2 id="meaning-word">Avada Kedavra 3000 Flashcard</h2>
             <br />
-            <h4 id="meaning-content">You know it!</h4>
+            <h4 id="meaning-content">Click <i>settings</i> to choose certain group or click buttons below to surf the whole Avada Kedavra 3000 :P</h4>
           </div>
         </div>
         <button type="button" class="word btn btn-default btn-lg btn-block" id="watch">Tap to see the meaning</button>
@@ -76,6 +76,7 @@
         <h1>Settings</h1>
         <h2>Choose number of lists(100 words) in a group</h2>
         <select id="list-per-group">
+          <option value="" selected="true" disabled="true">Choose a number</option>
           <option value=1>1</option>
           <option value=3>3</option>
           <option value=5>5</option>
@@ -102,6 +103,7 @@
       cntLearned = 0;
       cntTotal = 3072;
       index = 0;
+      gIndex = 0;
       selectedGroup = 0;
       learnedList = [];   //0
       reviewingList = []; //1
@@ -112,28 +114,41 @@
       getNextWord = function() {
         var nUnknown = reviewingList.length + learningList.length + newList.length;
         if (nUnknown > 0) {
-          index = Math.round(Math.random()*nUnknown);
-          if (index <= reviewingList.length) {
+          index = Math.round(Math.random()*(nUnknown-1));
+          if (index < reviewingList.length) {
             choosedList = reviewingList;
-            index--;
             return reviewingList[index]["word"];
-          } else if ((index - reviewingList.length) <= learningList.length) {
-            index = index - reviewingList.length - 1;
+          } else if ((index - reviewingList.length) < learningList.length) {
+            index = index - reviewingList.length;
             choosedList = learningList;
             return learningList[index]["word"];
           } else {
-            index = index - reviewingList.length - learnedList.length - 1;
+            index = index - reviewingList.length - learningList.length;
             choosedList = newList;
             return newList[index]["word"];
           }
         } else {
           choosedList = learnedList;
-          index--;
+          index = Math.round(Math.random()*(choosedList.length-1));
           return learnedList[index]["word"];
         }
       }
 
       getNextMeaning = function() {
+        switch(choosedList[index]["status"]) {
+          case -1:
+            $("#word-label").removeClass().addClass("label label-default").text("New word");
+            break;
+          case 0:
+            $("#word-label").removeClass().addClass("label label-success").text("Learned");
+            break;
+          case 1:
+            $("#word-label").removeClass().addClass("label label-warning").text("Reviewing");
+            break;
+          case 2:
+            $("#word-label").removeClass().addClass("label label-danger").text("Learning");
+            break;
+        }
         return choosedList[index]["meaning"];
       }
 
@@ -155,12 +170,11 @@
       //status: -1 for new, 0 for learned, 1 for review, 2 for learning
 
       showWordKnown = function() {
-        showWord();
         //new word but known
         if (choosedList[index]["status"] == -1) {
           choosedList[index]["status"] = 0;
           cntLearned++;
-          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+          $("#progress-learned, #progress-learned-" + gIndex.toString()).css("width", ((cntLearned / cntTotal)*100).toString() + "%")
                       .text(cntLearned);
           //move to learnedList
           learnedList.push(newList.splice(index,1)[0]);
@@ -168,47 +182,55 @@
           choosedList[index]["status"] = 0;
           cntReviewing--;
           cntLearned++;
-          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+          $("#progress-reviewing, #progress-reviewing-" + gIndex.toString()).css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
                       .text(cntReviewing);
-          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+          $("#progress-learned, #progress-learned-" + gIndex.toString()).css("width", ((cntLearned / cntTotal)*100).toString() + "%")
                       .text(cntLearned);
           //move to reviewList or learnedList
           learnedList.push(reviewingList.splice(index,1)[0]);
-        } else {
-          //unknown word but known now
+        } else if (choosedList[index]["status"] == 2){
+          console.log(choosedList[index]["word"] + " -" + choosedList[index]["status"].toString());
+          //learning word but known now
           choosedList[index]["status"] = 1;
           cntLearning--;
           cntReviewing++;
-          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+          $("#progress-reviewing, #progress-reviewing-" + gIndex.toString()).css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
                       .text(cntReviewing);
-          $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
+          $("#progress-learning, #progress-learning-" + gIndex.toString()).css("width", ((cntLearning / cntTotal)*100).toString() + "%")
                       .text(cntLearning);
           //move to reviewList or learnedList
           reviewingList.push(learningList.splice(index,1)[0]);
         }
+        showWord();
       }
 
       showWordUnknown = function() {
-        showWord();
         if (choosedList[index]["status"] == 0) {
           //once known but unknown now
           cntLearned--;
-          $("#progress-learned").css("width", ((cntLearned / cntTotal)*100).toString() + "%")
+          $("#progress-learned, #progress-learned-" + gIndex.toString()).css("width", ((cntLearned / cntTotal)*100).toString() + "%")
                       .text(cntLearned);
+          choosedList[index]["status"] = 2;
           learningList.push(learnedList.splice(index,1)[0]);
         } else if (choosedList[index]["status"] == 1) {
           //once reviewing but unknown now
           cntReviewing--;
-          $("#progress-reviewing").css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
+          $("#progress-reviewing, #progress-reviewing-" + gIndex.toString()).css("width", ((cntReviewing / cntTotal)*100).toString() + "%")
                       .text(cntReviewing);
+          choosedList[index]["status"] = 2;
           learningList.push(reviewingList.splice(index,1)[0]);
+        } else if (choosedList[index]["status"] == -1){
+          //once new but unknown
+          choosedList[index]["status"] = 2;
+          learningList.push(newList.splice(index,1)[0]);
         } else {
-          //once new but unknown, simply pass
+          //learning still learning
+          return;
         }
-        choosedList[index]["status"] = 2;
         cntLearning++;
-        $("#progress-learning").css("width", ((cntLearning / cntTotal)*100).toString() + "%")
+        $("#progress-learning, #progress-learning-" + gIndex.toString()).css("width", ((cntLearning / cntTotal)*100).toString() + "%")
                       .text(cntLearning);
+        showWord();
       }
 
       $("#watch").click(showMeaning);
@@ -255,20 +277,27 @@
       initStartClick = function() {
         $("#start-learn").click(function() {
           var nList = parseInt($("#list-per-group option:selected").val());
-          var gIndex = parseInt(selectedGroup.split("-")[1]);
+          gIndex = parseInt(selectedGroup.split("-")[1]);
           //determine start
           var start = (gIndex - 1) * 100;
           //determine end
-          var end = start + nList * 100;
+          cntTotal = nList * 100;
           if ((30/nList) == gIndex) {
             //the last group
-            end += 72;
+            cntTotal += 72;
           }
+          var end = start + cntTotal;
           //copy to newList
           newList = wordList.slice(start, end);
           //jump to learn page
           $("#settings").removeClass("active in");
           $("#learn").addClass("active in");
+          $("#settings-tab").parent().removeClass();
+          $("#learn-tab").parent().addClass("active");
+          cntLearning = 0;
+          cntReviewing = 0;
+          cntLearned = 0;
+          showWord();
         })
       }
 
